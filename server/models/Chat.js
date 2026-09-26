@@ -34,7 +34,13 @@ const ChatSchema = new mongoose.Schema({
   },
   subject: {
     type: String,
-    enum: ['Mathematics', 'Physics', 'Chemistry', 'Biology', 'History', 'Geography', 'English', 'Computer Science', 'Economics', 'General', 'Other'],
+    enum: [
+      'General Aptitude', 'Engineering Mathematics', 'Computer Science & IT',
+      'Electronics & Communication', 'Electrical Engineering', 'Mechanical Engineering',
+      'Civil Engineering', 'Physics', 'Chemistry', 'Mathematics',
+      'Quantitative Aptitude', 'Reasoning & Logical Ability', 'General Awareness',
+      'English Language', 'General', 'Other',
+    ],
     default: 'General',
   },
   messages: [MessageSchema],

@@ -1,4 +1,4 @@
-import { Brain, User, Image, Mic, FileText, Copy, Check } from 'lucide-react';
+import { Brain, Mic, Copy, Check } from 'lucide-react';
 import { useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -6,41 +6,37 @@ import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import toast from 'react-hot-toast';
 
-const InputTypeBadge = ({ type }) => {
-  const badges = {
-    image: { icon: <Image className="w-3 h-3" />, label: 'Image', cls: 'bg-purple-100 text-purple-700' },
-    voice: { icon: <Mic className="w-3 h-3" />, label: 'Voice', cls: 'bg-green-100 text-green-700' },
-    text: { icon: <FileText className="w-3 h-3" />, label: 'Text', cls: 'bg-blue-100 text-blue-700' },
-  };
-  const badge = badges[type] || badges.text;
-  return (
-    <span className={`inline-flex items-center gap-1 text-xs px-1.5 py-0.5 rounded-full font-medium ${badge.cls}`}>
-      {badge.icon} {badge.label}
-    </span>
-  );
+// Hardcoded colors (not relying on CSS custom properties) so the
+// bubbles always render correctly even if index.css hasn't loaded.
+const COLORS = {
+  ink: '#1e2530',
+  paper: '#f5f6f1',
+  paperRaised: '#ffffff',
+  inkFaint: '#8a92a1',
+  studyTeal: '#2f6f62',
+  ruleLine: '#dce1dd',
 };
 
 const MarkdownRenderer = ({ content }) => (
-  <ReactMarkdown
-    className="markdown-content"
-    remarkPlugins={[remarkGfm]}
-    components={{
-      code({ node, inline, className, children, ...props }) {
-        const match = /language-(\w+)/.exec(className || '');
-        return !inline && match ? (
-          <SyntaxHighlighter style={oneDark} language={match[1]} PreTag="div" {...props}>
-            {String(children).replace(/\n$/, '')}
-          </SyntaxHighlighter>
-        ) : (
-          <code className="bg-gray-100 text-gray-800 px-1.5 py-0.5 rounded text-xs font-mono" {...props}>
-            {children}
-          </code>
-        );
-      },
-    }}
-  >
-    {content}
-  </ReactMarkdown>
+  <div className="markdown-content">
+    <ReactMarkdown
+      remarkPlugins={[remarkGfm]}
+      components={{
+        code({ node, inline, className, children, ...props }) {
+          const match = /language-(\w+)/.exec(className || '');
+          return !inline && match ? (
+            <SyntaxHighlighter style={oneDark} language={match[1]} PreTag="div" {...props}>
+              {String(children).replace(/\n$/, '')}
+            </SyntaxHighlighter>
+          ) : (
+            <code {...props}>{children}</code>
+          );
+        },
+      }}
+    >
+      {content}
+    </ReactMarkdown>
+  </div>
 );
 
 export default function MessageBubble({ message }) {
@@ -60,47 +56,80 @@ export default function MessageBubble({ message }) {
 
   if (isUser) {
     return (
-      <div className="flex justify-end mb-3 animate-fade-in">
-        <div className="flex flex-col items-end gap-1 max-w-[80%]">
+      <div style={{ display: 'flex', justifyContent: 'flex-end', width: '100%', marginBottom: '1rem' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px', maxWidth: '80%' }}>
           {message.imageUrl && (
-            <img src={message.imageUrl} alt="Uploaded"
-              className="rounded-xl max-w-xs max-h-64 object-contain border border-gray-200 mb-1" />
+            <img
+              src={message.imageUrl}
+              alt="Uploaded"
+              style={{ borderRadius: '10px', maxWidth: '20rem', maxHeight: '16rem', objectFit: 'contain', border: `1px solid ${COLORS.ruleLine}`, marginBottom: '4px' }}
+            />
           )}
           {message.inputType === 'voice' && (
-            <div className="flex items-center gap-1.5 text-xs text-gray-500 mb-1">
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.75rem', color: COLORS.inkFaint, marginBottom: '2px' }}>
               <Mic className="w-3 h-3" />
               <span>Voice message transcribed</span>
             </div>
           )}
-          <div className="bg-blue-600 text-white rounded-2xl rounded-br-sm px-4 py-2.5 shadow-sm">
-            <p className="text-sm leading-relaxed whitespace-pre-wrap">{message.content}</p>
+          <div
+            style={{
+              background: COLORS.ink,
+              color: COLORS.paper,
+              padding: '0.85rem 1.1rem',
+              fontSize: '0.95rem',
+              lineHeight: 1.65,
+              borderRadius: '10px 10px 2px 10px',
+              maxWidth: '68ch',
+            }}
+          >
+            <p style={{ margin: 0, whiteSpace: 'pre-wrap' }}>{message.content}</p>
           </div>
-          <div className="flex items-center gap-2 px-1">
-            <InputTypeBadge type={message.inputType} />
-            <span className="text-xs text-gray-400">{timestamp}</span>
-          </div>
-        </div>
-        <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center flex-shrink-0 ml-2 mt-auto">
-          <User className="w-4 h-4 text-white" />
+          <span style={{ fontSize: '0.75rem', color: COLORS.inkFaint, padding: '0 4px' }}>{timestamp}</span>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="flex items-start gap-2.5 mb-3 animate-fade-in">
-      <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-        <Brain className="w-4 h-4 text-white" />
+    <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', marginBottom: '1rem' }}>
+      <div
+        style={{
+          width: '32px', height: '32px', borderRadius: '50%',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          background: COLORS.ink, flexShrink: 0, marginTop: '4px',
+        }}
+      >
+        <Brain className="w-4 h-4" style={{ color: COLORS.paper }} />
       </div>
-      <div className="flex-1 max-w-[90%]">
-        <div className="bg-white rounded-2xl rounded-bl-sm px-4 py-3 shadow-sm border border-gray-100 relative group">
-          <button onClick={copyContent}
-            className="absolute top-2.5 right-2.5 opacity-0 group-hover:opacity-100 p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-all">
-            {copied ? <Check className="w-3.5 h-3.5 text-green-500" /> : <Copy className="w-3.5 h-3.5" />}
+      <div style={{ flex: 1, maxWidth: '90%' }}>
+        <div
+          className="group"
+          style={{
+            position: 'relative',
+            background: COLORS.paperRaised,
+            color: COLORS.ink,
+            borderLeft: `3px solid ${COLORS.studyTeal}`,
+            borderRadius: '2px 10px 10px 2px',
+            boxShadow: '0 1px 2px rgba(30,37,48,0.06), 0 1px 1px rgba(30,37,48,0.04)',
+            padding: '0.85rem 1.1rem',
+            fontSize: '0.95rem',
+            lineHeight: 1.65,
+          }}
+        >
+          <button
+            onClick={copyContent}
+            className="opacity-0 group-hover:opacity-100"
+            style={{
+              position: 'absolute', top: '10px', right: '10px',
+              padding: '6px', borderRadius: '8px', transition: 'opacity 0.15s ease',
+              color: COLORS.inkFaint,
+            }}
+          >
+            {copied ? <Check className="w-3.5 h-3.5" style={{ color: COLORS.studyTeal }} /> : <Copy className="w-3.5 h-3.5" />}
           </button>
           <MarkdownRenderer content={message.content} />
         </div>
-        <span className="text-xs text-gray-400 px-1 mt-1">{timestamp}</span>
+        <span style={{ fontSize: '0.75rem', color: COLORS.inkFaint, padding: '0 4px', marginTop: '4px', display: 'inline-block' }}>{timestamp}</span>
       </div>
     </div>
   );

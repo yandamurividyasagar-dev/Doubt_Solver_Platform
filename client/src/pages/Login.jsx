@@ -1,6 +1,6 @@
 import { useState, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Brain, Eye, EyeOff, Loader2 } from 'lucide-react';
+import { Brain, Eye, EyeOff, Loader2, ArrowLeft } from 'lucide-react';
 import { AuthContext } from '../context/AuthContext';
 import toast from 'react-hot-toast';
 
@@ -32,58 +32,77 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <Link to="/" className="inline-flex items-center gap-2 mb-4">
-            <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center">
-              <Brain className="w-6 h-6 text-white" />
-            </div>
-            <span className="font-bold text-xl text-gray-900">AI Doubt Solver</span>
-          </Link>
-          <h1 className="text-2xl font-bold text-gray-900">Welcome back!</h1>
-          <p className="text-gray-500 text-sm mt-1">Sign in to continue learning</p>
-        </div>
+    <div className="min-h-screen flex flex-col" style={{ background: 'var(--paper)' }}>
+      {/* Slim top bar, consistent with the rest of the app */}
+      <div
+        className="px-4 sm:px-6 py-3.5"
+        style={{ background: 'var(--paper-raised)', borderBottom: '1px solid var(--rule-line)' }}
+      >
+        <Link
+          to="/"
+          className="inline-flex items-center gap-2 text-sm font-medium"
+          style={{ color: 'var(--ink-soft)' }}
+        >
+          <ArrowLeft className="w-4 h-4" /> Back to home
+        </Link>
+      </div>
 
-        <div className="card">
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">Email</label>
-              <input
-                type="email" name="email" value={form.email}
-                onChange={handleChange} placeholder="you@example.com"
-                className="input-field" required autoComplete="email"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">Password</label>
-              <div className="relative">
-                <input
-                  type={showPw ? 'text' : 'password'} name="password"
-                  value={form.password} onChange={handleChange}
-                  placeholder="Your password" className="input-field pr-10" required
-                />
-                <button type="button" onClick={() => setShowPw(p => !p)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
-                  {showPw ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                </button>
+      <div className="flex-1 flex items-center justify-center p-4 notebook-bg">
+        <div className="w-full max-w-md">
+          <div className="text-center mb-8">
+            <Link to="/" className="inline-flex items-center gap-2 mb-4">
+              <div className="w-10 h-10 rounded-md flex items-center justify-center" style={{ background: 'var(--ink)' }}>
+                <Brain className="w-5 h-5" style={{ color: 'var(--paper)' }} />
               </div>
-            </div>
-
-            <button type="submit" disabled={loading} className="btn-primary w-full py-2.5 mt-2">
-              {loading
-                ? <><Loader2 className="w-4 h-4 animate-spin" /> Signing in...</>
-                : 'Sign In'}
-            </button>
-          </form>
-
-          <p className="text-center text-sm text-gray-500 mt-5">
-            Don't have an account?{' '}
-            <Link to="/register" className="text-blue-600 font-medium hover:underline">
-              Create one
+              <span className="font-semibold text-lg tracking-tight" style={{ fontFamily: 'var(--font-heading)', color: 'var(--ink)' }}>
+                AI Doubt Solver
+              </span>
             </Link>
-          </p>
+            <h1 style={{ fontFamily: 'var(--font-heading)', color: 'var(--ink)', fontSize: '1.75rem' }}>Welcome back!</h1>
+            <p className="text-sm mt-1" style={{ color: 'var(--ink-soft)' }}>Sign in to continue learning</p>
+          </div>
+
+          <div className="card">
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <label className="field-label">Email</label>
+                <input
+                  type="email" name="email" value={form.email}
+                  onChange={handleChange} placeholder="you@example.com"
+                  className="field" required autoComplete="email"
+                />
+              </div>
+
+              <div>
+                <label className="field-label">Password</label>
+                <div className="relative">
+                  <input
+                    type={showPw ? 'text' : 'password'} name="password"
+                    value={form.password} onChange={handleChange}
+                    placeholder="Your password" className="field" style={{ paddingRight: '2.5rem' }} required
+                  />
+                  <button type="button" onClick={() => setShowPw(p => !p)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2"
+                    style={{ color: 'var(--ink-faint)' }}>
+                    {showPw ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
+              </div>
+
+              <button type="submit" disabled={loading} className="btn btn-primary w-full justify-center mt-2">
+                {loading
+                  ? <><Loader2 className="w-4 h-4 animate-spin" /> Signing in...</>
+                  : 'Sign In'}
+              </button>
+            </form>
+
+            <p className="text-center text-sm mt-5" style={{ color: 'var(--ink-soft)' }}>
+              Don't have an account?{' '}
+              <Link to="/register" className="font-medium" style={{ color: 'var(--study-teal)' }}>
+                Create account
+              </Link>
+            </p>
+          </div>
         </div>
       </div>
     </div>

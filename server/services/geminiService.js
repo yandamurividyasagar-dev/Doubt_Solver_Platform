@@ -4,31 +4,37 @@ const path = require('path');
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
-const TEXT_MODEL = 'llama-3.3-70b-versatile';
-const VISION_MODEL = 'meta-llama/llama-4-scout-17b-16e-instruct';
+const TEXT_MODEL = 'openai/gpt-oss-120b';
+const VISION_MODEL = 'qwen/qwen3.8-27b';
 
-const TUTOR_SYSTEM_PROMPT = `You are an expert AI tutor helping students from grades 8-12 and college level understand concepts.
+const TUTOR_SYSTEM_PROMPT = `You are an expert mentor for Indian competitive exam aspirants preparing for GATE, IIT JAM, and government exams (SSC, Banking, Railways, UPSC, and State PSCs).
 
 Your approach:
-- Break down complex concepts into simple, easy-to-understand steps
-- Use analogies and real-world examples relevant to students
-- Provide step-by-step solutions for math/science problems, showing all working steps
-- If solving math, use proper notation and explain each step
-- Be encouraging and patient
-- End answers with a brief summary or key takeaway
-- Format responses with clear headings, bullet points, and numbered steps where appropriate
-- Use markdown formatting for better readability`;
+- Solve every problem the way it would actually appear in the exam: show the complete step-by-step method, not just the final answer.
+- Name the formula, theorem, or standard result being used, in a form the student could put on a quick-revision sheet.
+- If the question is objective-type, identify whether it reads like an MCQ, an MSQ (multiple correct options), or a Numerical Answer Type (NAT) question, and answer accordingly. For MCQ/MSQ, briefly note why the other options are wrong, since option elimination is a core exam skill — not just why the right one is right.
+- Point out common traps tied to the concept (sign errors, unit mismatches, edge cases, rounding) since these cost marks under negative marking.
+- Favor the fastest correct method over the most exhaustive one — these students are working against a clock, not writing a thesis.
+- Use proper mathematical notation and markdown formatting (headings, bold, bullet points, numbered steps) for clarity.
+- Be encouraging, but talk to the student as a serious, exam-focused adult, not a school child.
+- End with a one-line takeaway they could use for quick revision the night before the exam.`;
 
 // Local subject detection (zero API calls)
 const detectSubject = (text) => {
   const t = text.toLowerCase();
-  if (/\b(equation|algebra|calculus|geometry|integral|derivative|matrix|theorem|math|solve|calculate)\b/.test(t)) return 'Mathematics';
-  if (/\b(force|velocity|acceleration|momentum|energy|gravity|newton|circuit|quantum|physics)\b/.test(t)) return 'Physics';
-  if (/\b(atom|molecule|reaction|element|compound|acid|base|chemistry|valence)\b/.test(t)) return 'Chemistry';
-  if (/\b(cell|dna|rna|protein|photosynthesis|evolution|biology|genetics)\b/.test(t)) return 'Biology';
-  if (/\b(history|war|revolution|empire|civilization|ancient|medieval)\b/.test(t)) return 'History';
-  if (/\b(program|code|algorithm|function|loop|array|html|javascript|python|computer)\b/.test(t)) return 'Computer Science';
-  if (/\b(grammar|essay|poem|novel|literature|verb|noun|english)\b/.test(t)) return 'English';
+  if (/\b(program|code|algorithm|data structure|operating system|dbms|sql|compiler|network|tcp|computer organization)\b/.test(t)) return 'Computer Science & IT';
+  if (/\b(circuit|transistor|amplifier|signal|modulation|semiconductor|digital logic|communication system)\b/.test(t)) return 'Electronics & Communication';
+  if (/\b(voltage|current|power system|motor|generator|transformer|control system)\b/.test(t)) return 'Electrical Engineering';
+  if (/\b(thermodynamics|fluid mechanics|machine design|manufacturing|strength of materials|heat transfer)\b/.test(t)) return 'Mechanical Engineering';
+  if (/\b(concrete|structural|surveying|geotechnical|highway|environmental engineering|steel structure)\b/.test(t)) return 'Civil Engineering';
+  if (/\b(matrix|eigenvalue|laplace|fourier|differential equation|probability|linear algebra|numerical method)\b/.test(t)) return 'Engineering Mathematics';
+  if (/\b(percentage|profit and loss|time and work|ratio|average|permutation|combination|simple interest)\b/.test(t)) return 'Quantitative Aptitude';
+  if (/\b(syllogism|blood relation|seating arrangement|coding-decoding|puzzle|direction sense|series completion)\b/.test(t)) return 'Reasoning & Logical Ability';
+  if (/\b(current affairs|budget|scheme|committee|award|summit|static gk|census)\b/.test(t)) return 'General Awareness';
+  if (/\b(equation|algebra|calculus|geometry|integral|derivative|theorem|solve|calculate)\b/.test(t)) return 'Mathematics';
+  if (/\b(force|velocity|acceleration|momentum|energy|gravity|newton|quantum|optics|thermodynamics)\b/.test(t)) return 'Physics';
+  if (/\b(atom|molecule|reaction|element|compound|acid|base|valence|organic|inorganic)\b/.test(t)) return 'Chemistry';
+  if (/\b(grammar|synonym|antonym|comprehension|idiom|sentence correction|spotting error)\b/.test(t)) return 'English Language';
   return 'General';
 };
 

@@ -90,49 +90,57 @@ export default function VoiceInput({ onRecorded, onCancel, disabled }) {
   };
 
   return (
-    <div className="bg-white border border-gray-200 rounded-2xl p-4">
+    <div className="card" style={{ padding: '1rem' }}>
       <div className="flex items-center justify-between mb-3">
-        <h3 className="font-medium text-sm text-gray-700">Voice Input</h3>
-        <button onClick={onCancel} className="text-gray-400 hover:text-gray-600">
+        <h3 className="font-medium text-sm" style={{ color: 'var(--ink)' }}>Voice Input</h3>
+        <button onClick={onCancel} style={{ color: 'var(--ink-faint)' }}>
           <X className="w-4 h-4" />
         </button>
       </div>
 
       {status === 'idle' && (
         <div className="text-center py-4">
-          <p className="text-sm text-gray-500 mb-4">Press the button and speak your doubt clearly</p>
-          <button onClick={startRecording}
-            className="w-16 h-16 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center mx-auto shadow-lg">
+          <p className="text-sm mb-4" style={{ color: 'var(--ink-soft)' }}>Press the button and speak your doubt clearly</p>
+          <button
+            onClick={startRecording}
+            className="w-16 h-16 rounded-full flex items-center justify-center mx-auto"
+            style={{ background: 'var(--error)', color: '#fff', boxShadow: 'var(--shadow-card)' }}
+          >
             <Mic className="w-7 h-7" />
           </button>
-          <p className="text-xs text-gray-400 mt-3">Max 2 minutes</p>
+          <p className="text-xs mt-3" style={{ color: 'var(--ink-faint)' }}>Max 2 minutes</p>
         </div>
       )}
 
       {status === 'recording' && (
         <div className="text-center py-4">
           <div className="flex items-center justify-center gap-2 mb-2">
-            <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
-            <span className="text-red-500 font-medium text-sm">Recording...</span>
+            <span className="recording-dot" />
+            <span className="font-medium text-sm" style={{ color: 'var(--error)' }}>Recording...</span>
           </div>
-          <p className="text-3xl font-mono font-bold text-gray-900 mb-4">{formatTime(duration)}</p>
-          <button onClick={stopRecording}
-            className="w-14 h-14 bg-gray-800 hover:bg-gray-900 text-white rounded-full flex items-center justify-center mx-auto shadow-lg">
+          <p className="text-3xl font-mono font-bold mb-4" style={{ color: 'var(--ink)' }}>{formatTime(duration)}</p>
+          <button
+            onClick={stopRecording}
+            className="w-14 h-14 rounded-full flex items-center justify-center mx-auto"
+            style={{ background: 'var(--ink)', color: 'var(--paper)', boxShadow: 'var(--shadow-card)' }}
+          >
             <Square className="w-5 h-5" />
           </button>
-          <p className="text-xs text-gray-400 mt-2">Tap to stop</p>
+          <p className="text-xs mt-2" style={{ color: 'var(--ink-faint)' }}>Tap to stop</p>
         </div>
       )}
 
       {status === 'stopped' && (
         <div className="py-2">
-          <p className="text-sm text-gray-600 mb-3 text-center">Recording complete ({formatTime(duration)})</p>
+          <p className="text-sm mb-3 text-center" style={{ color: 'var(--ink-soft)' }}>
+            Recording complete ({formatTime(duration)})
+          </p>
           {audioUrl && <audio controls src={audioUrl} className="w-full mb-4 rounded-lg" />}
           <div className="flex gap-2">
-            <button onClick={handleDiscard} className="btn-secondary flex-1 text-sm py-2">
+            <button onClick={handleDiscard} className="btn btn-secondary flex-1 justify-center text-sm">
               <X className="w-4 h-4" /> Discard
             </button>
-            <button onClick={handleSend} disabled={disabled} className="btn-primary flex-1 text-sm py-2">
+            <button onClick={handleSend} disabled={disabled} className="btn btn-primary flex-1 justify-center text-sm">
               {disabled
                 ? <><Loader2 className="w-4 h-4 animate-spin" /> Sending...</>
                 : <><Send className="w-4 h-4" /> Send</>}

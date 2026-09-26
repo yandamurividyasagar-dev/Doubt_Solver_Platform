@@ -18,13 +18,16 @@
   --paper: #f5f6f1;
   --paper-raised: #ffffff;
   --ink: #1e2530;
+  --ink-deep: #10141c;
   --ink-soft: #57606f;
   --ink-faint: #8a92a1;
-  --marker-amber: #e2a63b;
-  --marker-amber-soft: #fbf1de;
+  --marker-amber: #eab308;
+  --marker-amber-soft: #fdf1cf;
   --study-teal: #2f6f62;
   --study-teal-soft: #e6efec;
+  --study-teal-bright: #4fb3a0;
   --rule-line: #dce1dd;
+  --rule-line-dark: rgba(245, 246, 241, 0.12);
   --error: #b3462c;
   --error-soft: #f6e6e1;
 
@@ -143,6 +146,39 @@ a:hover {
     transform: none;
   }
 
+  /* .btn-primary / .btn-secondary / .btn-accent double as
+     standalone classes (older markup applies just one of
+     these without ".btn"), so each repeats the base button
+     layout rather than relying on ".btn" being present too. */
+  .btn-primary,
+  .btn-secondary,
+  .btn-accent {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.65rem 1.25rem;
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 0.9rem;
+    border-radius: var(--radius-sm);
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.05s ease;
+  }
+  .btn-primary:active,
+  .btn-secondary:active,
+  .btn-accent:active {
+    transform: translateY(1px);
+  }
+  .btn-primary:disabled,
+  .btn-secondary:disabled,
+  .btn-accent:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+    transform: none;
+  }
+
   .btn-primary {
     background: var(--ink);
     color: var(--paper);
@@ -196,12 +232,38 @@ a:hover {
     margin-bottom: 0.35rem;
   }
 
+  /* Alias so older markup using "input-field" gets the same
+     styling as ".field" without having to rename every usage. */
+  .input-field {
+    width: 100%;
+    padding: 0.7rem 0.9rem;
+    background: var(--paper-raised);
+    border: 1px solid var(--rule-line);
+    border-radius: var(--radius-sm);
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    color: var(--ink);
+    transition: border-color 0.15s ease;
+  }
+  .input-field::placeholder {
+    color: var(--ink-faint);
+  }
+  .input-field:focus {
+    outline: none;
+    border-color: var(--study-teal);
+  }
+  .input-field:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
   /* ── Cards (dashboard chat list, stats) ──────────────*/
   .card {
     background: var(--paper-raised);
     border: 1px solid var(--rule-line);
     border-radius: var(--radius-md);
     box-shadow: var(--shadow-card);
+    padding: 1.5rem;
   }
 
   .stat-tile {
@@ -249,9 +311,7 @@ a:hover {
       var(--rule-line) 32px
     );
     background-position: 0 4rem;
-  }
-
-  /* ── Chat message bubbles ────────────────────────────
+      /* ── Chat message bubbles ────────────────────────────
      Assistant messages read like a margin note: a thin teal
      rule on the left instead of a rounded "bubble" — it ties
      back to the notebook idea and separates the two roles
@@ -297,12 +357,68 @@ a:hover {
   }
   .bubble-assistant p {
     margin-bottom: 0.6rem;
+    max-width: none;
   }
   .bubble-assistant code {
     background: var(--marker-amber-soft);
     padding: 0.1rem 0.35rem;
     border-radius: 4px;
     font-size: 0.85em;
+  }
+
+  /* ── Markdown content (AI answers) ───────────────────*/
+  .markdown-content > *:first-child { margin-top: 0; }
+  .markdown-content > *:last-child { margin-bottom: 0; }
+  .markdown-content ul,
+  .markdown-content ol {
+    margin: 0 0 0.6rem 0;
+    padding-left: 1.4rem;
+  }
+  .markdown-content li {
+    margin-bottom: 0.25rem;
+  }
+  .markdown-content strong {
+    color: var(--ink);
+    font-weight: 700;
+  }
+  .markdown-content a {
+    text-decoration: underline;
+  }
+  .markdown-content blockquote {
+    border-left: 3px solid var(--marker-amber);
+    padding-left: 0.75rem;
+    color: var(--ink-soft);
+    margin: 0.6rem 0;
+  }
+  .markdown-content pre {
+    margin: 0.6rem 0;
+    border-radius: var(--radius-sm);
+    overflow-x: auto;
+    max-width: 100%;
+  }
+  .markdown-content table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0.75rem 0;
+    font-size: 0.85em;
+    display: block;
+    overflow-x: auto;
+  }
+  .markdown-content th,
+  .markdown-content td {
+    border: 1px solid var(--rule-line);
+    padding: 0.4rem 0.6rem;
+    text-align: left;
+  }
+  .markdown-content th {
+    background: var(--paper);
+    font-weight: 700;
+    color: var(--ink);
+  }
+  .markdown-content hr {
+    border: none;
+    border-top: 1px solid var(--rule-line);
+    margin: 1rem 0;
   }
 
   /* Input-type badge (image / voice / text) on a message */
@@ -354,8 +470,243 @@ a:hover {
   }
 }
 
+/* ── Landing page ────────────────────────────────────── */
+@layer components {
+  /* Worked-example card in the hero: a single ring-bound
+     notebook page rather than a generic browser-chrome demo. */
+  .worked-example {
+    position: relative;
+    background: var(--paper-raised);
+    border-radius: var(--radius-md);
+    box-shadow: 0 20px 40px -12px rgba(30, 37, 48, 0.18), 0 2px 6px rgba(30, 37, 48, 0.06);
+    overflow: hidden;
+  }
+  .worked-example::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 34px;
+    background-image: radial-gradient(circle, var(--paper) 3.5px, transparent 3.6px);
+    background-size: 100% 34px;
+    background-position: 17px 12px;
+    border-right: 1px solid var(--rule-line);
+  }
+  .worked-example-body {
+    margin-left: 34px;
+    padding: 1.4rem 1.5rem 1.6rem;
+  }
+  .worked-example-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.3rem 0.75rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    background: var(--study-teal-soft);
+    color: var(--study-teal);
+    margin-bottom: 1rem;
+  }
+
+  /* Numbered process sequence ("How it works") — a connected
+     path rather than three disconnected cards. */
+  .step-seq {
+    position: relative;
+    display: grid;
+    gap: 2.25rem;
+  }
+  @media (min-width: 768px) {
+    .step-seq {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+    }
+    .step-seq::before {
+      content: '';
+      position: absolute;
+      top: 22px;
+      left: calc(16.66% + 22px);
+      right: calc(16.66% + 22px);
+      height: 1px;
+      background-image: repeating-linear-gradient(to right, var(--rule-line) 0 6px, transparent 6px 12px);
+    }
+  }
+  .step-num {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-heading);
+    font-size: 1.1rem;
+    font-weight: 700;
+    background: var(--ink);
+    color: var(--paper);
+    position: relative;
+    z-index: 1;
+    flex-shrink: 0;
+    margin-bottom: 1rem;
+  }
+
+  /* Input-mode showcase ("Ways to ask") tab switcher */
+  .mode-tab {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    width: 100%;
+    text-align: left;
+    padding: 0.9rem 1rem;
+    border-radius: var(--radius-sm);
+    border: 1px solid transparent;
+    background: transparent;
+    cursor: pointer;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+  }
+  .mode-tab:hover {
+    background: var(--paper-raised);
+  }
+  .mode-tab[data-active='true'] {
+    background: var(--paper-raised);
+    border-color: var(--rule-line);
+    box-shadow: var(--shadow-card);
+  }
+  .mode-tab-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  /* Subject chip cloud */
+  .chip-cloud {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+  }
+
+  /* FAQ accordion, built on native <details> for accessibility
+     without extra JS. */
+  .faq-item {
+    border-bottom: 1px solid var(--rule-line);
+    padding: 1.1rem 0;
+  }
+  .faq-item summary {
+    list-style: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    font-family: var(--font-heading);
+    font-size: 1.05rem;
+    color: var(--ink);
+  }
+  .faq-item summary::-webkit-details-marker {
+    display: none;
+  }
+  .faq-item summary .faq-icon {
+    flex-shrink: 0;
+    transition: transform 0.2s ease;
+    color: var(--ink-faint);
+  }
+  .faq-item[open] summary .faq-icon {
+    transform: rotate(45deg);
+  }
+  .faq-item p {
+    margin-top: 0.6rem;
+    color: var(--ink-soft);
+    max-width: 62ch;
+  }
+}
+
+/* ── Landing page ────────────────────────────────────── */
+@layer components {
+  /* Hero sits on a deep-ink band so the floating "page" mockup
+     reads as an actual product screenshot, not more flat paper. */
+  .hero-dark {
+    background: var(--ink-deep);
+    background-image:
+      radial-gradient(ellipse 60% 50% at 50% 0%, rgba(79, 179, 160, 0.14), transparent 70%);
+  }
+
+  .avatar-stack {
+    display: flex;
+  }
+  .avatar-stack > * {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 2px solid var(--ink-deep);
+    margin-left: -8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: var(--ink-deep);
+  }
+  .avatar-stack > *:first-child {
+    margin-left: 0;
+  }
+
+  .subject-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.4rem 0.85rem;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    border: 1px solid var(--rule-line-dark);
+    color: rgba(245, 246, 241, 0.75);
+    white-space: nowrap;
+  }
+
+  .testimonial-card {
+    background: var(--paper-raised);
+    border: 1px solid var(--rule-line);
+    border-radius: var(--radius-md);
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  .stat-lg {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 2.5rem;
+    color: var(--paper);
+    line-height: 1;
+  }
+
+  .footer-dark {
+    background: var(--ink-deep);
+    color: rgba(245, 246, 241, 0.6);
+  }
+  .footer-dark a {
+    color: rgba(245, 246, 241, 0.75);
+  }
+  .footer-dark a:hover {
+    color: var(--paper);
+  }
+  .footer-heading {
+    color: var(--paper);
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    margin-bottom: 0.9rem;
+  }
+}
+
 /* ── Responsive ──────────────────────────────────────── */
 @media (max-width: 640px) {
   h1 { font-size: 1.6rem; }
   .bubble { max-width: 88%; }
 }
+  }

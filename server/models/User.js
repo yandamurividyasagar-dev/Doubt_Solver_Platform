@@ -24,12 +24,18 @@ const UserSchema = new mongoose.Schema({
   },
   grade: {
     type: String,
-    enum: ['8th', '9th', '10th', '11th', '12th', 'College', 'Other'],
+    enum: ['GATE', 'IIT JAM', 'SSC', 'Banking', 'Railways', 'UPSC', 'State PSC', 'Other'],
     default: 'Other',
   },
   subjects: [{
     type: String,
-    enum: ['Mathematics', 'Physics', 'Chemistry', 'Biology', 'History', 'Geography', 'English', 'Computer Science', 'Economics', 'Other'],
+    enum: [
+      'General Aptitude', 'Engineering Mathematics', 'Computer Science & IT',
+      'Electronics & Communication', 'Electrical Engineering', 'Mechanical Engineering',
+      'Civil Engineering', 'Physics', 'Chemistry', 'Mathematics',
+      'Quantitative Aptitude', 'Reasoning & Logical Ability', 'General Awareness',
+      'English Language', 'Other',
+    ],
   }],
   totalDoubts: {
     type: Number,

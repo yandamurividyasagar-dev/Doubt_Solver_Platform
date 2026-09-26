@@ -4,7 +4,12 @@ import { ChatContext } from '../../context/ChatContext';
 import VoiceInput from './VoiceInput';
 import toast from 'react-hot-toast';
 
-const SUBJECTS = ['General', 'Mathematics', 'Physics', 'Chemistry', 'Biology', 'History', 'Geography', 'English', 'Computer Science', 'Economics'];
+const SUBJECTS = [
+  'General', 'General Aptitude', 'Engineering Mathematics', 'Computer Science & IT',
+  'Electronics & Communication', 'Electrical Engineering', 'Mechanical Engineering',
+  'Civil Engineering', 'Physics', 'Chemistry', 'Mathematics',
+  'Quantitative Aptitude', 'Reasoning & Logical Ability', 'General Awareness', 'English Language',
+];
 
 export default function InputArea({ subject: initialSubject }) {
   const [text, setText] = useState('');
@@ -81,9 +86,17 @@ export default function InputArea({ subject: initialSubject }) {
     <div className="space-y-2">
       {imagePreview && (
         <div className="relative inline-block">
-          <img src={imagePreview} alt="Preview" className="h-24 rounded-xl border border-gray-200 object-contain" />
-          <button onClick={removeImage}
-            className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600">
+          <img
+            src={imagePreview}
+            alt="Preview"
+            className="h-24 rounded-lg object-contain"
+            style={{ border: '1px solid var(--rule-line)' }}
+          />
+          <button
+            onClick={removeImage}
+            className="absolute -top-2 -right-2 w-5 h-5 rounded-full flex items-center justify-center"
+            style={{ background: 'var(--error)', color: '#fff' }}
+          >
             <X className="w-3 h-3" />
           </button>
         </div>
@@ -91,17 +104,26 @@ export default function InputArea({ subject: initialSubject }) {
 
       <div className="flex items-end gap-2">
         <div className="relative flex-shrink-0">
-          <button onClick={() => setShowSubjectPicker(p => !p)}
-            className="flex items-center gap-1 px-2.5 py-2 text-xs font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg">
+          <button
+            onClick={() => setShowSubjectPicker(p => !p)}
+            className="flex items-center gap-1 px-2.5 rounded-lg text-xs font-medium"
+            style={{ background: 'var(--paper)', color: 'var(--ink-soft)', height: '44px', border: '1px solid var(--rule-line)' }}
+          >
             {selectedSubject}
             <ChevronDown className="w-3 h-3" />
           </button>
           {showSubjectPicker && (
-            <div className="absolute bottom-full mb-1 left-0 bg-white rounded-xl shadow-lg border border-gray-100 py-1 z-20 min-w-[160px]">
+            <div
+              className="absolute bottom-full mb-1 left-0 rounded-md py-1 z-20 min-w-[160px]"
+              style={{ background: 'var(--paper-raised)', border: '1px solid var(--rule-line)', boxShadow: 'var(--shadow-card)' }}
+            >
               {SUBJECTS.map(s => (
-                <button key={s}
+                <button
+                  key={s}
                   onClick={() => { setSelectedSubject(s); setShowSubjectPicker(false); }}
-                  className={`w-full text-left px-3 py-1.5 text-xs hover:bg-gray-50 ${selectedSubject === s ? 'text-blue-600 font-medium' : 'text-gray-700'}`}>
+                  className="w-full text-left px-3 py-1.5 text-xs"
+                  style={{ color: selectedSubject === s ? 'var(--study-teal)' : 'var(--ink-soft)', fontWeight: selectedSubject === s ? 600 : 400 }}
+                >
                   {s}
                 </button>
               ))}
@@ -119,30 +141,46 @@ export default function InputArea({ subject: initialSubject }) {
             : 'Ask your doubt... (Shift+Enter for new line)'}
           rows={1}
           disabled={sendingMessage}
-          className="flex-1 resize-none input-field py-2.5 pr-3 text-sm leading-relaxed min-h-[44px] max-h-[160px]"
+          className="flex-1 resize-none field"
+          style={{ minHeight: '44px', maxHeight: '160px' }}
         />
 
-        <button onClick={() => fileInputRef.current?.click()} disabled={sendingMessage}
-          className={`p-2.5 rounded-lg ${mode === 'image' ? 'bg-purple-100 text-purple-600' : 'text-gray-500 hover:bg-gray-100'}`}>
+        <button
+          onClick={() => fileInputRef.current?.click()}
+          disabled={sendingMessage}
+          className="rounded-lg flex items-center justify-center flex-shrink-0"
+          style={{
+            width: '44px', height: '44px',
+            background: mode === 'image' ? 'var(--study-teal-soft)' : 'transparent',
+            color: mode === 'image' ? 'var(--study-teal)' : 'var(--ink-faint)',
+          }}
+        >
           <Image className="w-5 h-5" />
         </button>
         <input ref={fileInputRef} type="file" accept="image/*" onChange={handleImageSelect} className="hidden" />
 
-        <button onClick={() => setShowVoice(true)} disabled={sendingMessage}
-          className="p-2.5 text-gray-500 hover:bg-gray-100 hover:text-green-600 rounded-lg">
+        <button
+          onClick={() => setShowVoice(true)}
+          disabled={sendingMessage}
+          className="rounded-lg flex items-center justify-center flex-shrink-0"
+          style={{ width: '44px', height: '44px', color: 'var(--ink-faint)' }}
+        >
           <Mic className="w-5 h-5" />
         </button>
 
-        <button onClick={mode === 'image' ? handleSendImage : handleSendText}
+        <button
+          onClick={mode === 'image' ? handleSendImage : handleSendText}
           disabled={sendingMessage || (!text.trim() && !imageFile)}
-          className="btn-primary px-3 py-2.5">
+          className="btn btn-primary flex-shrink-0"
+          style={{ width: '44px', height: '44px', padding: 0 }}
+        >
           {sendingMessage
             ? <Loader2 className="w-5 h-5 animate-spin" />
             : <Send className="w-5 h-5" />}
         </button>
       </div>
 
-      <p className="text-xs text-gray-400 text-center">
+      <p className="text-xs text-center" style={{ color: 'var(--ink-faint)' }}>
         AI can make mistakes. Verify important information.
       </p>
     </div>
