@@ -96,7 +96,7 @@ export default function Login() {
           <p className="text-center text-sm mt-5" style={{ color: 'var(--ink-soft)' }}>
             Don't have an account?{' '}
             <Link to="/register" className="font-medium" style={{ color: 'var(--study-teal)' }}>
-              Create one
+              Create account
             </Link>
           </p>
         </div>
