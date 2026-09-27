@@ -14,7 +14,7 @@
 
 ## Demo Video
 
-[![Watch Demo](https://github.com/user-attachments/assets/d36157c7-edbd-4748-aa13-8cbd32a36899)
+https://github.com/user-attachments/assets/PASTE-YOUR-VIDEO-ASSET-ID-HERE
 
 ---
 
