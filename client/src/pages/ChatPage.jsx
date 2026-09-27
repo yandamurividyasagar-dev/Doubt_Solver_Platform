@@ -89,13 +89,18 @@ export default function ChatPage() {
       </div>
 
       <div
-        className="sticky bottom-0"
-        style={{ background: 'var(--paper-raised)', borderTop: '1px solid var(--rule-line)', boxShadow: '0 -2px 8px rgba(30,37,48,0.04)' }}
-      >
-        <div className="max-w-4xl mx-auto px-4 py-3">
-          <InputArea subject={activeChat.subject} />
-        </div>
-      </div>
+  className="sticky bottom-0"
+  style={{
+    background: 'var(--paper-raised)',
+    borderTop: '1px solid var(--rule-line)',
+    boxShadow: '0 -2px 8px rgba(30,37,48,0.04)',
+    paddingBottom: 'env(safe-area-inset-bottom, 0px)',
+  }}
+>
+  <div className="max-w-4xl mx-auto px-4 py-3">
+    <InputArea subject={activeChat.subject} />
+  </div>
+</div>
     </div>
   );
 }

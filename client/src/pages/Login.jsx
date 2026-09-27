@@ -32,77 +32,73 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col" style={{ background: 'var(--paper)' }}>
-      {/* Slim top bar, consistent with the rest of the app */}
-      <div
-        className="px-4 sm:px-6 py-3.5"
-        style={{ background: 'var(--paper-raised)', borderBottom: '1px solid var(--rule-line)' }}
-      >
-        <Link
-          to="/"
-          className="inline-flex items-center gap-2 text-sm font-medium"
-          style={{ color: 'var(--ink-soft)' }}
-        >
-          <ArrowLeft className="w-4 h-4" /> Back to home
-        </Link>
-      </div>
+    <div className="min-h-screen flex items-center justify-center p-4 notebook-bg" style={{ background: 'var(--paper)' }}>
+      <div className="w-full max-w-md">
+        <div className="text-center mb-8">
+          <Link to="/" className="inline-flex items-center gap-2 mb-4">
+            <div className="w-10 h-10 rounded-md flex items-center justify-center" style={{ background: 'var(--ink)' }}>
+              <Brain className="w-5 h-5" style={{ color: 'var(--paper)' }} />
+            </div>
+            <span className="font-semibold text-lg tracking-tight" style={{ fontFamily: 'var(--font-heading)', color: 'var(--ink)' }}>
+              AI Doubt Solver
+            </span>
+          </Link>
+          <div style={{ position: 'relative' }}>
+  <button
+    onClick={() => navigate('/')}
+    style={{
+      position: 'absolute', left: 0, top: '50%', transform: 'translateY(-50%)',
+      padding: '6px', borderRadius: '8px', color: 'var(--ink-soft)', lineHeight: 0,
+    }}
+    aria-label="Back to home"
+  >
+    <ArrowLeft className="w-5 h-5" />
+  </button>
+  <h1 style={{ fontFamily: 'var(--font-heading)', color: 'var(--ink)', fontSize: '1.75rem' }}>Welcome back!</h1>
+</div>
+          <p className="text-sm mt-1" style={{ color: 'var(--ink-soft)' }}>Sign in to continue learning</p>
+        </div>
 
-      <div className="flex-1 flex items-center justify-center p-4 notebook-bg">
-        <div className="w-full max-w-md">
-          <div className="text-center mb-8">
-            <Link to="/" className="inline-flex items-center gap-2 mb-4">
-              <div className="w-10 h-10 rounded-md flex items-center justify-center" style={{ background: 'var(--ink)' }}>
-                <Brain className="w-5 h-5" style={{ color: 'var(--paper)' }} />
-              </div>
-              <span className="font-semibold text-lg tracking-tight" style={{ fontFamily: 'var(--font-heading)', color: 'var(--ink)' }}>
-                AI Doubt Solver
-              </span>
-            </Link>
-            <h1 style={{ fontFamily: 'var(--font-heading)', color: 'var(--ink)', fontSize: '1.75rem' }}>Welcome back!</h1>
-            <p className="text-sm mt-1" style={{ color: 'var(--ink-soft)' }}>Sign in to continue learning</p>
-          </div>
+        <div className="card">
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label className="field-label">Email</label>
+              <input
+                type="email" name="email" value={form.email}
+                onChange={handleChange} placeholder="you@example.com"
+                className="field" required autoComplete="email"
+              />
+            </div>
 
-          <div className="card">
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <label className="field-label">Email</label>
+            <div>
+              <label className="field-label">Password</label>
+              <div className="relative">
                 <input
-                  type="email" name="email" value={form.email}
-                  onChange={handleChange} placeholder="you@example.com"
-                  className="field" required autoComplete="email"
+                  type={showPw ? 'text' : 'password'} name="password"
+                  value={form.password} onChange={handleChange}
+                  placeholder="Your password" className="field" style={{ paddingRight: '2.5rem' }} required
                 />
+                <button type="button" onClick={() => setShowPw(p => !p)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2"
+                  style={{ color: 'var(--ink-faint)' }}>
+                  {showPw ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
               </div>
+            </div>
 
-              <div>
-                <label className="field-label">Password</label>
-                <div className="relative">
-                  <input
-                    type={showPw ? 'text' : 'password'} name="password"
-                    value={form.password} onChange={handleChange}
-                    placeholder="Your password" className="field" style={{ paddingRight: '2.5rem' }} required
-                  />
-                  <button type="button" onClick={() => setShowPw(p => !p)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2"
-                    style={{ color: 'var(--ink-faint)' }}>
-                    {showPw ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                  </button>
-                </div>
-              </div>
+            <button type="submit" disabled={loading} className="btn btn-primary w-full justify-center mt-2">
+              {loading
+                ? <><Loader2 className="w-4 h-4 animate-spin" /> Signing in...</>
+                : 'Sign In'}
+            </button>
+          </form>
 
-              <button type="submit" disabled={loading} className="btn btn-primary w-full justify-center mt-2">
-                {loading
-                  ? <><Loader2 className="w-4 h-4 animate-spin" /> Signing in...</>
-                  : 'Sign In'}
-              </button>
-            </form>
-
-            <p className="text-center text-sm mt-5" style={{ color: 'var(--ink-soft)' }}>
-              Don't have an account?{' '}
-              <Link to="/register" className="font-medium" style={{ color: 'var(--study-teal)' }}>
-                Create account
-              </Link>
-            </p>
-          </div>
+          <p className="text-center text-sm mt-5" style={{ color: 'var(--ink-soft)' }}>
+            Don't have an account?{' '}
+            <Link to="/register" className="font-medium" style={{ color: 'var(--study-teal)' }}>
+              Create one
+            </Link>
+          </p>
         </div>
       </div>
     </div>

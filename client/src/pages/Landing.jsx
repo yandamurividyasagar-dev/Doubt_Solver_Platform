@@ -1,17 +1,24 @@
 // ============================================
 // Landing.jsx - Public Marketing Page
-// Positioned for GATE / IIT JAM / Government exam aspirants
-// (a less crowded, underserved niche vs. the JEE/NEET/CBSE
-// doubt-solving apps that already dominate that space)
+// Positioned for GATE / IIT JAM / JEE / NEET / CBSE / ICSE
+// and Government exam aspirants.
 // ============================================
 
+import { useState, useEffect, useRef, useLayoutEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import {
-  Brain, MessageSquare, Image, Mic, BookOpen, Shield,
-  ArrowRight, Sparkles, Clock, Target,
+  Brain, MessageSquare, Image, Mic, BookOpen,
+  ArrowRight, Sparkles, Clock, Target, Menu, X, Plus,
 } from 'lucide-react';
 
 const EXAM_PILLS = ['GATE', 'IIT JAM', 'CBSE', 'ICSE', 'SSC', 'NEET', 'JEE', 'Banking', 'Railways', 'UPSC'];
+
+const NAV_LINKS = [
+  { label: 'How it works', href: '#how-it-works' },
+  { label: 'Features', href: '#benefits' },
+  { label: 'Testimonials', href: '#testimonials' },
+  { label: 'FAQ', href: '#faq' },
+];
 
 const SPOTLIGHTS = [
   {
@@ -86,16 +93,165 @@ const TESTIMONIALS = [
   { initials: 'MP', grade: 'SSC CGL aspirant', quote: "It actually pointed out where I'd lose marks on a reasoning puzzle, not just given the answer. That changed how I check my own work now." },
 ];
 
+const FAQS = [
+  { q: 'Which exams does this cover?', a: 'GATE (all major branches), IIT JAM, JEE, NEET, CBSE and ICSE boards, and government exams like SSC, Banking, Railways, UPSC and State PSCs.' },
+  { q: 'Is it free to use?', a: 'Yes, creating an account and asking doubts is free to get started.' },
+  { q: 'Can I ask a doubt from a photo?', a: 'Yes — upload or photograph a problem, including handwritten notes or diagrams, and the AI reads and solves it.' },
+  { q: 'Does it work for voice questions?', a: 'Yes, you can record your doubt out loud and it will be transcribed and answered automatically.' },
+];
+
+// Guided tour steps — each points at a real ref on an actual navbar
+// element so the coachmark highlights the live button, not a mockup.
+const TOUR_STEPS = [
+  { refKey: 'logo', title: 'AI Doubt Solver', desc: 'Your AI tutor for GATE, JEE, NEET, CBSE, ICSE and government exams. Let\u2019s walk through the top bar.' },
+  { refKey: 'nav-0', title: 'How it works', desc: 'Click this to jump to the section explaining the three ways you can ask a doubt — type, photo, or voice.' },
+  { refKey: 'nav-1', title: 'Features', desc: 'Click this to see what makes the answers exam-focused — negative-marking traps, fastest methods, and more.' },
+  { refKey: 'nav-2', title: 'Testimonials', desc: 'Click this to read what other aspirants preparing for these exams are saying.' },
+  { refKey: 'nav-3', title: 'FAQ', desc: 'Click this for quick answers to common questions about the app.' },
+  { refKey: 'login', title: 'Login', desc: 'Already have an account? Click here anytime to sign back in.' },
+  { refKey: 'getstarted', title: 'Get started', desc: 'Click this button to create your free account and start asking doubts right away.' },
+];
+
 export default function Landing() {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [openFaq, setOpenFaq] = useState(null);
+
+  // ── Guided tour state ──────────────────────────────
+  const [tourStep, setTourStep] = useState(null); // null = not running
+  const [highlightRect, setHighlightRect] = useState(null);
+
+  const logoRef = useRef(null);
+  const navLinkRefs = useRef([]);
+  const loginRef = useRef(null);
+  const getStartedRef = useRef(null);
+
+  const getTargetEl = useCallback((refKey) => {
+    if (refKey === 'logo') return logoRef.current;
+    if (refKey === 'login') return loginRef.current;
+    if (refKey === 'getstarted') return getStartedRef.current;
+    if (refKey?.startsWith('nav-')) {
+      const idx = parseInt(refKey.split('-')[1], 10);
+      return navLinkRefs.current[idx];
+    }
+    return null;
+  }, []);
+
+  const measure = useCallback(() => {
+    if (tourStep === null) return;
+    const el = getTargetEl(TOUR_STEPS[tourStep].refKey);
+    if (!el) return;
+    const r = el.getBoundingClientRect();
+    setHighlightRect({ top: r.top, left: r.left, width: r.width, height: r.height });
+  }, [tourStep, getTargetEl]);
+
+  useLayoutEffect(() => { measure(); }, [measure]);
+
+  useEffect(() => {
+    if (tourStep === null) return;
+    window.addEventListener('resize', measure);
+    return () => window.removeEventListener('resize', measure);
+  }, [tourStep, measure]);
+
+  useEffect(() => {
+    const seen = localStorage.getItem('ads_tour_seen');
+    if (!seen) {
+      const timer = setTimeout(() => setTourStep(0), 700);
+      return () => clearTimeout(timer);
+    }
+  }, []);
+
+  useEffect(() => {
+    document.body.style.overflow = tourStep !== null ? 'hidden' : '';
+    return () => { document.body.style.overflow = ''; };
+  }, [tourStep]);
+
+  const endTour = () => {
+    localStorage.setItem('ads_tour_seen', 'true');
+    setTourStep(null);
+    setHighlightRect(null);
+  };
+
+  const nextTourStep = () => {
+    if (tourStep < TOUR_STEPS.length - 1) setTourStep(s => s + 1);
+    else endTour();
+  };
+  const prevTourStep = () => {
+    if (tourStep > 0) setTourStep(s => s - 1);
+  };
+
+  // Tooltip position: below the target, clamped to viewport width
+  const tooltipStyle = (() => {
+    if (!highlightRect) return { display: 'none' };
+    const width = 300;
+    let left = highlightRect.left + highlightRect.width / 2 - width / 2;
+    left = Math.max(12, Math.min(left, window.innerWidth - width - 12));
+    const top = highlightRect.top + highlightRect.height + 14;
+    return { position: 'fixed', top: `${top}px`, left: `${left}px`, width: `${width}px`, zIndex: 102 };
+  })();
+
   return (
     <div className="min-h-screen" style={{ background: 'var(--paper)' }}>
-      {/* Navbar */}
+
+      {/* Guided tour overlay */}
+      {tourStep !== null && highlightRect && (
+        <>
+          {/* Dimmed backdrop */}
+          <div style={{ position: 'fixed', inset: 0, background: 'rgba(16,20,28,0.55)', zIndex: 99 }} />
+
+          {/* Highlight ring around the live element */}
+          <div
+            style={{
+              position: 'fixed',
+              top: highlightRect.top - 6,
+              left: highlightRect.left - 8,
+              width: highlightRect.width + 16,
+              height: highlightRect.height + 12,
+              borderRadius: '10px',
+              boxShadow: '0 0 0 4px var(--study-teal-bright), 0 0 0 9999px rgba(16,20,28,0.55)',
+              zIndex: 100,
+              pointerEvents: 'none',
+              transition: 'top 0.2s ease, left 0.2s ease, width 0.2s ease, height 0.2s ease',
+            }}
+          />
+
+          {/* Tooltip card */}
+          <div className="card" style={{ ...tooltipStyle, padding: '1.1rem 1.25rem' }}>
+            <p className="font-semibold mb-1.5" style={{ color: 'var(--ink)', fontFamily: 'var(--font-heading)', fontSize: '1rem' }}>
+              {TOUR_STEPS[tourStep].title}
+            </p>
+            <p className="text-sm mb-4" style={{ color: 'var(--ink-soft)' }}>
+              {TOUR_STEPS[tourStep].desc}
+            </p>
+            <div className="flex items-center justify-between">
+              <span className="text-xs" style={{ color: 'var(--ink-faint)' }}>
+                {tourStep + 1} / {TOUR_STEPS.length}
+              </span>
+              <div className="flex items-center gap-2">
+                <button onClick={endTour} className="text-xs font-medium" style={{ color: 'var(--ink-faint)' }}>
+                  Skip
+                </button>
+                {tourStep > 0 && (
+                  <button onClick={prevTourStep} className="btn btn-secondary text-xs" style={{ padding: '0.4rem 0.8rem' }}>
+                    Back
+                  </button>
+                )}
+                <button onClick={nextTourStep} className="btn btn-primary text-xs" style={{ padding: '0.4rem 0.8rem' }}>
+                  {tourStep === TOUR_STEPS.length - 1 ? 'Done' : 'Next'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* Navbar — evenly spaced, three distinct zones like a classic e-commerce top bar */}
       <nav
-        className="flex items-center justify-between px-6 py-4 sticky top-0 z-30"
+        className="px-6 py-4 sticky top-0 z-30"
         style={{ background: 'var(--paper-raised)', borderBottom: '1px solid var(--rule-line)' }}
       >
-        <div className="max-w-6xl w-full mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
+        <div className="max-w-6xl w-full mx-auto flex items-center justify-between gap-6">
+          {/* Zone 1: brand */}
+          <div className="flex items-center gap-2.5 flex-shrink-0" ref={logoRef}>
             <div className="w-8 h-8 rounded-md flex items-center justify-center" style={{ background: 'var(--ink)' }}>
               <Brain className="w-4 h-4" style={{ color: 'var(--paper)' }} />
             </div>
@@ -103,15 +259,66 @@ export default function Landing() {
               AI Doubt Solver
             </span>
           </div>
-          <div className="flex items-center gap-5">
-            <Link to="/login" className="text-sm font-medium" style={{ color: 'var(--ink-soft)' }}>
+
+          {/* Zone 2: nav links — generously spaced, centered */}
+          <div className="hidden md:flex items-center justify-evenly flex-1 px-8">
+            {NAV_LINKS.map((link, i) => (
+              <a
+                key={link.href}
+                href={link.href}
+                ref={el => { navLinkRefs.current[i] = el; }}
+                className="text-sm font-medium"
+                style={{ color: 'var(--ink-soft)', letterSpacing: '0.01em' }}
+              >
+                {link.label}
+              </a>
+            ))}
+          </div>
+
+          {/* Zone 3: auth actions */}
+          <div className="hidden md:flex items-center gap-6 flex-shrink-0">
+            <Link ref={loginRef} to="/login" className="text-sm font-medium" style={{ color: 'var(--ink-soft)' }}>
               Login
             </Link>
-            <Link to="/register" className="btn btn-primary text-sm">
+            <Link ref={getStartedRef} to="/register" className="btn btn-primary text-sm">
               Get started
             </Link>
           </div>
+
+          {/* Mobile hamburger */}
+          <button
+            className="md:hidden p-2"
+            style={{ color: 'var(--ink)' }}
+            onClick={() => setMobileMenuOpen(o => !o)}
+            aria-label="Toggle menu"
+          >
+            {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          </button>
         </div>
+
+        {/* Mobile dropdown */}
+        {mobileMenuOpen && (
+          <div className="md:hidden max-w-6xl mx-auto pt-4 flex flex-col gap-3">
+            {NAV_LINKS.map(link => (
+              <a
+                key={link.href} href={link.href}
+                onClick={() => setMobileMenuOpen(false)}
+                className="text-sm font-medium py-1"
+                style={{ color: 'var(--ink-soft)' }}
+              >
+                {link.label}
+              </a>
+            ))}
+            <div className="flex items-center gap-4 pt-2" style={{ borderTop: '1px solid var(--rule-line)' }}>
+              <Link to="/login" className="text-sm font-medium py-2" style={{ color: 'var(--ink-soft)' }}>
+                Login
+              </Link>
+              <Link to="/register" className="btn btn-primary text-sm">
+                Get started
+              </Link>
+            </div>
+          </div>
+        )}
       </nav>
 
       {/* Hero */}
@@ -184,8 +391,9 @@ export default function Landing() {
           </div>
         </div>
       </section>
-            {/* Feature spotlights: three ways to ask */}
-      <section className="py-24 px-6 max-w-6xl mx-auto">
+
+      {/* Feature spotlights: three ways to ask */}
+      <section id="how-it-works" className="py-24 px-6 max-w-6xl mx-auto">
         <div className="max-w-xl mb-16">
           <h2 style={{ fontFamily: 'var(--font-heading)', color: 'var(--ink)', fontSize: '2rem' }}>
             Ask however it's easiest right now
@@ -221,7 +429,7 @@ export default function Landing() {
       </section>
 
       {/* Secondary benefits — plain, not another card grid */}
-      <section className="py-20 px-6" style={{ background: 'var(--paper-raised)', borderTop: '1px solid var(--rule-line)', borderBottom: '1px solid var(--rule-line)' }}>
+      <section id="benefits" className="py-20 px-6" style={{ background: 'var(--paper-raised)', borderTop: '1px solid var(--rule-line)', borderBottom: '1px solid var(--rule-line)' }}>
         <div className="max-w-6xl mx-auto grid md:grid-cols-3 gap-10">
           {EXTRAS.map((e, i) => (
             <div key={i} className="flex gap-4">
@@ -263,7 +471,7 @@ export default function Landing() {
       </section>
 
       {/* Testimonials */}
-      <section className="py-24 px-6 max-w-6xl mx-auto">
+      <section id="testimonials" className="py-24 px-6 max-w-6xl mx-auto">
         <div className="text-center mb-14">
           <h2 style={{ fontFamily: 'var(--font-heading)', color: 'var(--ink)', fontSize: '2rem' }}>
             Ask alongside other aspirants
@@ -289,8 +497,47 @@ export default function Landing() {
         </div>
       </section>
 
+      {/* FAQ */}
+      <section id="faq" className="py-24 px-6" style={{ background: 'var(--paper-raised)', borderTop: '1px solid var(--rule-line)', borderBottom: '1px solid var(--rule-line)' }}>
+        <div className="max-w-3xl mx-auto">
+          <h2 className="text-center mb-10" style={{ fontFamily: 'var(--font-heading)', color: 'var(--ink)', fontSize: '2rem' }}>
+            Frequently asked questions
+          </h2>
+          <div>
+            {FAQS.map((f, i) => (
+              <div key={i} className="faq-item">
+                <button
+                  onClick={() => setOpenFaq(openFaq === i ? null : i)}
+                  style={{ all: 'unset', display: 'block', width: '100%', cursor: 'pointer' }}
+                >
+                  <div
+                    style={{
+                      display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem',
+                      fontFamily: 'var(--font-heading)', fontSize: '1.05rem', color: 'var(--ink)',
+                    }}
+                  >
+                    {f.q}
+                    <Plus
+                      className="faq-icon"
+                      style={{
+                        flexShrink: 0, color: 'var(--ink-faint)',
+                        transform: openFaq === i ? 'rotate(45deg)' : 'rotate(0deg)',
+                        transition: 'transform 0.2s ease',
+                      }}
+                    />
+                  </div>
+                </button>
+                {openFaq === i && (
+                  <p className="mt-2.5" style={{ color: 'var(--ink-soft)', maxWidth: '62ch' }}>{f.a}</p>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* CTA */}
-      <section className="pb-24 px-6 text-center">
+      <section className="pb-24 px-6 text-center pt-24">
         <div className="max-w-2xl mx-auto rounded-lg py-14 px-8" style={{ background: 'var(--ink)' }}>
           <h2 className="mb-3" style={{ fontFamily: 'var(--font-heading)', color: 'var(--paper)', fontSize: '2rem' }}>
             Ready to stop guessing?
@@ -322,6 +569,9 @@ export default function Landing() {
           <div>
             <p className="footer-heading">Product</p>
             <ul className="space-y-2 text-sm">
+              <li><a href="#how-it-works">How it works</a></li>
+              <li><a href="#benefits">Features</a></li>
+              <li><a href="#faq">FAQ</a></li>
               <li><Link to="/register">Get started</Link></li>
               <li><Link to="/login">Sign in</Link></li>
             </ul>

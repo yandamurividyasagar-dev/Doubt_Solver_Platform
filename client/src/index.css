@@ -44,6 +44,28 @@
   box-sizing: border-box;
 }
 
+html, body {
+  overflow-x: hidden;
+  width: 100%;
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button, a, .subject-chip, .mode-tab {
+  touch-action: manipulation;
+}
+
+button, .btn, .btn-primary, .btn-secondary, .btn-accent {
+  min-height: 40px;
+}
+
+@media (max-width: 480px) {
+  h1 { font-size: 1.4rem; }
+  .card { padding: 1.1rem; }
+}
+
 html {
   scroll-behavior: smooth;
 }
@@ -92,8 +114,19 @@ a {
   color: var(--study-teal);
   text-decoration: none;
 }
-a:hover {
-  text-decoration: underline;
+/* Only underline plain inline text links (e.g. inside paragraphs or
+   markdown content) on hover — never links styled as buttons/chips/tabs. */
+a:hover:not(.btn):not(.btn-primary):not(.btn-secondary):not(.btn-accent):not(.subject-chip):not(.subject-pill):not(.mode-tab) {
+  text-decoration: none;
+}
+a.btn,
+a.btn-primary,
+a.btn-secondary,
+a.btn-accent,
+a.subject-chip,
+a.subject-pill,
+a.mode-tab {
+  text-decoration: none !important;
 }
 
 /* Visible, deliberate focus ring everywhere — never remove
@@ -146,10 +179,6 @@ a:hover {
     transform: none;
   }
 
-  /* .btn-primary / .btn-secondary / .btn-accent double as
-     standalone classes (older markup applies just one of
-     these without ".btn"), so each repeats the base button
-     layout rather than relying on ".btn" being present too. */
   .btn-primary,
   .btn-secondary,
   .btn-accent {
@@ -232,8 +261,6 @@ a:hover {
     margin-bottom: 0.35rem;
   }
 
-  /* Alias so older markup using "input-field" gets the same
-     styling as ".field" without having to rename every usage. */
   .input-field {
     width: 100%;
     padding: 0.7rem 0.9rem;
@@ -311,7 +338,9 @@ a:hover {
       var(--rule-line) 32px
     );
     background-position: 0 4rem;
-      /* ── Chat message bubbles ────────────────────────────
+  }
+
+  /* ── Chat message bubbles ────────────────────────────
      Assistant messages read like a margin note: a thin teal
      rule on the left instead of a rounded "bubble" — it ties
      back to the notebook idea and separates the two roles
@@ -472,8 +501,6 @@ a:hover {
 
 /* ── Landing page ────────────────────────────────────── */
 @layer components {
-  /* Worked-example card in the hero: a single ring-bound
-     notebook page rather than a generic browser-chrome demo. */
   .worked-example {
     position: relative;
     background: var(--paper-raised);
@@ -510,8 +537,6 @@ a:hover {
     margin-bottom: 1rem;
   }
 
-  /* Numbered process sequence ("How it works") — a connected
-     path rather than three disconnected cards. */
   .step-seq {
     position: relative;
     display: grid;
@@ -550,7 +575,6 @@ a:hover {
     margin-bottom: 1rem;
   }
 
-  /* Input-mode showcase ("Ways to ask") tab switcher */
   .mode-tab {
     display: flex;
     align-items: center;
@@ -582,15 +606,12 @@ a:hover {
     flex-shrink: 0;
   }
 
-  /* Subject chip cloud */
   .chip-cloud {
     display: flex;
     flex-wrap: wrap;
     gap: 0.6rem;
   }
 
-  /* FAQ accordion, built on native <details> for accessibility
-     without extra JS. */
   .faq-item {
     border-bottom: 1px solid var(--rule-line);
     padding: 1.1rem 0;
@@ -626,8 +647,6 @@ a:hover {
 
 /* ── Landing page ────────────────────────────────────── */
 @layer components {
-  /* Hero sits on a deep-ink band so the floating "page" mockup
-     reads as an actual product screenshot, not more flat paper. */
   .hero-dark {
     background: var(--ink-deep);
     background-image:
@@ -664,7 +683,6 @@ a:hover {
     font-weight: 500;
     border: 1px solid var(--rule-line-dark);
     color: rgba(245, 246, 241, 0.75);
-    white-space: nowrap;
   }
 
   .testimonial-card {
@@ -708,5 +726,12 @@ a:hover {
 @media (max-width: 640px) {
   h1 { font-size: 1.6rem; }
   .bubble { max-width: 88%; }
-}
+
+  /* The hero's first badge is a long sentence — let it wrap
+     on phones instead of forcing one wide line that gets
+     clipped by the global overflow-x: hidden rule above. */
+  .subject-pill {
+    white-space: normal;
+    text-align: left;
   }
+}

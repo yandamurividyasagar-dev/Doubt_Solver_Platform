@@ -113,10 +113,10 @@ export default function InputArea({ subject: initialSubject }) {
             <ChevronDown className="w-3 h-3" />
           </button>
           {showSubjectPicker && (
-            <div
-              className="absolute bottom-full mb-1 left-0 rounded-md py-1 z-20 min-w-[160px]"
-              style={{ background: 'var(--paper-raised)', border: '1px solid var(--rule-line)', boxShadow: 'var(--shadow-card)' }}
-            >
+  <div
+    className="absolute bottom-full mb-1 left-0 rounded-md py-1 z-20 min-w-[160px] max-w-[calc(100vw-2rem)] overflow-y-auto"
+    style={{ background: 'var(--paper-raised)', border: '1px solid var(--rule-line)', boxShadow: 'var(--shadow-card)', maxHeight: '260px' }}
+  >
               {SUBJECTS.map(s => (
                 <button
                   key={s}
