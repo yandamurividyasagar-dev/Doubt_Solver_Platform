@@ -6,7 +6,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'https://doubt-solver-platform.onrender.com',
+        target: 'https://doubt-solver-platform-3.onrender.com',
         changeOrigin: true,
       },
     },
