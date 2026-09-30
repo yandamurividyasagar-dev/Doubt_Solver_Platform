@@ -6,7 +6,7 @@
 
 ## 🚀 Live Demo
 
-**[➜ Try it live → aidoubtsolver.in](https://aidoubtsolver.in)**
+**[➜ Try it live → aidoubtsolver.in](https://doubt-solver-platform-front.onrender.com)**
 
 > No installation needed. Register with an email and password, and start asking doubts instantly.
 
