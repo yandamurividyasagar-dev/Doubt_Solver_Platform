@@ -153,6 +153,9 @@ export default function Landing() {
   }, [tourStep, measure]);
 
   useEffect(() => {
+    // Skip the guided tour on mobile / small screens
+    const isMobile = window.matchMedia('(max-width: 768px)').matches;
+    if (isMobile) return;
     const seen = localStorage.getItem('ads_tour_seen');
     if (!seen) {
       const timer = setTimeout(() => setTourStep(0), 700);
